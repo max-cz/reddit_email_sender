@@ -7,7 +7,6 @@ The email is base on the reddit search (**[example](https://www.reddit.com/r/lea
 
 Reddit email sender will sent email only if new comments are present and it will remove from the database posts older then one month.
 
-This is a beginner project.
 
 ## Requirements
 * [**Mailgun**](www.mailgun.com) - 300 free email per day, no credid card required - [Docs](https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api)
@@ -20,3 +19,8 @@ This is a beginner project.
 * Add reddit API secrets to `praw.ini` file, under `[bot1]`
 * Define subreddit and search parameters on `subreddits_parameters.yml` file
 * Setup Cron or TaskScheduler to run `main.py`
+
+## Note
+* This is a beginner project.
+* A `db` folder will be created in the running directory
+* Circular `logs` file in the running directory with traceback
