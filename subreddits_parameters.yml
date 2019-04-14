@@ -1,0 +1,8 @@
+# Reddit parameters
+# Modify or add the below as needed
+---
+- subreddit: "python"
+  search: "aws OR docker OR vagrant"
+
+- subreddit: "learnpython"
+  search: "docker OR aws"

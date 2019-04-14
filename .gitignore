@@ -1,0 +1,14 @@
+# Logs:
+*.log
+*.log.[0-9]
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.idea/
+/db/
