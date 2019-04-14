@@ -24,3 +24,7 @@ Reddit email sender will sent email only if new comments are present and it will
 * This is a beginner project.
 * A `db` folder will be created in the running directory
 * Circular `logs` file in the running directory with traceback
+
+
+## Example
+<img src="https://i.imgur.com/nI4Fwsh.jpg" width="500"> 
