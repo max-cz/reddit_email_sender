@@ -69,7 +69,7 @@ def post_update(reddit: praw, posts: List[Dict]) -> List[Dict]:
             "title": post['title'],
             "link": post['link']
         })
-    logger.warning(f'Posts: {len(ids)}\nEXAMPLE:\n{ids[0]}')
+    logger.warning('Posts: %s', len(ids))
     return ids
 
 
@@ -87,14 +87,14 @@ def update_db(new_results: List[Dict], db: TinyDB, ids: List[Dict], article: Que
 
     # copy all db
     all_db = db.all()
-    logger.warning(f'DB original length: {len(all_db)}')
+    logger.warning('DB original length: %s', len(all_db))
     # remove old db entry not present in the last search
     filtered_db = [x for x in all_db if x in ids]
     db.purge()
     for db_id in filtered_db:
         # reinitialize db
         db.insert(db_id)
-    logger.warning(f'DB final length: {len(db.all())}')
+    logger.warning('DB final length: %s', len(db.all()))
 
 
 def template(posts_data: List[Dict], title: str) -> str:
@@ -142,14 +142,14 @@ def mailgun_secrets() -> Dict:
 
 
 def main():
-    logger.warning(f'---------------NEW_LOGs---------------')
+    logger.warning('---------------NEW_LOGs---------------')
     reddit = praw.Reddit('bot1')
     subreddits = data_file()
     mailgun_credential = mailgun_secrets()
     for sub in subreddits:
         search = sub['search']
         print(f"Processing subreddit {sub['subreddit'].upper()}...")
-        logger.warning(f"Processing subreddit {sub['subreddit'].upper()}...")
+        logger.warning("Processing subreddit %s...", sub['subreddit'].upper())
         # reddit read-only instance
         subreddit = reddit.subreddit(sub['subreddit'])
 
@@ -166,13 +166,13 @@ def main():
             update_db(data, db, posts, db_query)
             if response.status_code == requests.codes.ok:
                 print(f'Email --SENT-- New updates: {len(data)}')
-                logger.warning(f'Email --SENT-- New updates: {len(data)}')
+                logger.warning('Email --SENT-- New updates: %s', len(data))
             else:
                 print('Email --FAILED--')
                 response.raise_for_status()
         else:
             print(f'--No new post/comment--')
-            logger.warning(f'--No new post/comment--')
+            logger.warning('--No new post/comment--')
 
 
 if __name__ == "__main__":
