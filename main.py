@@ -73,17 +73,17 @@ def post_update(reddit: praw, posts: List[Dict]) -> List[Dict]:
     return ids
 
 
-def new_posts(ids: List[Dict], db: TinyDB) -> List[Dict]:
+def new_posts(ids: List[Dict], db: TinyDB, article: Query) -> List[Dict]:
     # new post/comment to be emailed
     return [result for result in ids if not db.search(
-        (Article.sub_id.matches(result["sub_id"])) & (Article.com_id.matches(result["com_id"])))
+        (article.sub_id.matches(result["sub_id"])) & (article.com_id.matches(result["com_id"])))
             ]
 
 
-def update_db(new_results: List[Dict], db: TinyDB, ids: List[Dict]) -> None:
+def update_db(new_results: List[Dict], db: TinyDB, ids: List[Dict], article: Query) -> None:
     for result in new_results:
         # if sub present, update it, else insert it
-        db.upsert(result, Article.sub_id == result["sub_id"])
+        db.upsert(result, article.sub_id == result["sub_id"])
 
     # copy all db
     all_db = db.all()
@@ -141,35 +141,39 @@ def mailgun_secrets() -> Dict:
         return yaml.load(f)
 
 
-if __name__ == "__main__":
+def main():
     logger.warning(f'---------------NEW_LOGs---------------')
-    reddit_praw = praw.Reddit('bot1')
-    subreddits_data = data_file()
+    reddit = praw.Reddit('bot1')
+    subreddits = data_file()
     mailgun_credential = mailgun_secrets()
-    for sub in subreddits_data:
+    for sub in subreddits:
         search = sub['search']
         print(f"Processing subreddit {sub['subreddit'].upper()}...")
         logger.warning(f"Processing subreddit {sub['subreddit'].upper()}...")
         # reddit read-only instance
-        subreddit = reddit_praw.subreddit(sub['subreddit'])
-        date = datetime.today().strftime("%y-%m-%d")
-        # Create file in db folder
-        database = TinyDB(f"db/posts_data-{sub['subreddit']}.json", indent=4)
-        Article = Query()
-        reddit_posts = reddit_post(subreddit, search)
-        new_query = post_update(reddit_praw, reddit_posts)
-        new_data = new_posts(new_query, database)
+        subreddit = reddit.subreddit(sub['subreddit'])
 
-        if new_data:
-            msg = template(new_data, search)
+        date = datetime.today().strftime("%y-%m-%d")
+        db = TinyDB(f"db/posts_data-{sub['subreddit']}.json", indent=4)
+        db_query = Query()
+        reddit_posts = reddit_post(subreddit, search)
+        posts = post_update(reddit, reddit_posts)
+        data = new_posts(posts, db, db_query)
+
+        if data:
+            msg = template(data, search)
             response = send_message(msg, date, sub, mailgun_credential)
+            update_db(data, db, posts, db_query)
             if response.status_code == requests.codes.ok:
-                update_db(new_data, database, new_query)
-                print(f'Email --SENT-- New updates: {len(new_data)}')
-                logger.warning(f'Email --SENT-- New updates: {len(new_data)}')
+                print(f'Email --SENT-- New updates: {len(data)}')
+                logger.warning(f'Email --SENT-- New updates: {len(data)}')
             else:
                 print('Email --FAILED--')
                 response.raise_for_status()
         else:
             print(f'--No new post/comment--')
             logger.warning(f'--No new post/comment--')
+
+
+if __name__ == "__main__":
+    main()

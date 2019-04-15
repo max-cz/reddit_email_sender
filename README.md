@@ -9,7 +9,7 @@ Reddit email sender will sent email only if new comments are present and it will
 
 
 ## Requirements
-* [**Mailgun**](www.mailgun.com) - 300 free email per day, no credid card required - [Docs](https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api)
+* [**Mailgun**](https://www.mailgun.com) - 300 free email per day, no credid card required - [Docs](https://documentation.mailgun.com/en/latest/user_manual.html#sending-via-api)
 * [**Reddit-API**](https://github.com/reddit-archive/reddit/wiki/OAuth2) and [rules](https://www.reddit.com/wiki/api)
 
 ## Usage
