@@ -163,8 +163,8 @@ def main():
         if data:
             msg = template(data, search)
             response = send_message(msg, date, sub, mailgun_credential)
-            update_db(data, db, posts, db_query)
             if response.status_code == requests.codes.ok:
+                update_db(data, db, posts, db_query)
                 print(f'Email --SENT-- New updates: {len(data)}')
                 logger.warning('Email --SENT-- New updates: %s', len(data))
             else:
